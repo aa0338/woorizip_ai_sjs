@@ -1,0 +1,42 @@
+# app/main.py
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
+from app.clients.embedding_client import KureEmbeddingClient, OpenaiEmbeddingClient
+from app.clients.llm_client import QwenLlmClient
+from app import embed_router
+from app.clients.qdrant_client import QdrantDbClient
+from app.schemas import RoomSummaryRequest
+from app.services.summary_service import SummaryService
+from fastapi import Request
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.llmClient=QwenLlmClient("Qwen/Qwen2.5-3B-Instruct")
+    # app.state.embeddingClient=OpenaiEmbeddingClient()
+    app.state.embeddingClient=KureEmbeddingClient()
+    app.state.vectorClient=QdrantDbClient()
+    yield
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(embed_router.router)
+
+
+@app.get("/")
+def welcome():
+    return {"hello": "ai"}
+
+    
+@app.post("/room/summary/totalinfo", tags=["summary"], summary="방 정보 요약", description="방의 정보(기본정보+사진캡션요약+리뷰요약)를 종합 요약합니다.")
+def roomSummary(roomSummaryRequest:RoomSummaryRequest, request:Request):
+    
+    summaryService=SummaryService(request.app.state.llmClient)
+    summary = summaryService.summaryRoomInfo(roomSummaryRequest.roomInfo)
+    return {
+        "status": True,
+        "roomNo": roomSummaryRequest.roomNo,
+        "summary": summary,
+        "message": "방정보 종합 요약 성공"
+    }
