@@ -37,7 +37,7 @@ class QdrantDbClient:
         points=[]
         for i in range(0, n):
             point_id = str(uuid5(UUID(target.roomNo), f"{i}"))
-            points.append(PointStruct(id=point_id, vector=vector[i], payload={"roomNo": target.roomNo}))
+            points.append(PointStruct(id=point_id, vector=vector[i], payload={"roomNo": target.roomNo, "roomName": target.roomName, "houseNo": target.houseNo, "houseName": target.houseName, "houseAddress": target.houseAddress}))
         
         info = self.client.upsert(
             collection_name=collection_name,

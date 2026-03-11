@@ -10,6 +10,7 @@ class RoomRequest(BaseModel):
     roomName: str
     houseNo: str
     houseName: str
+    houseAddress: str
     roomCreatedAt: datetime
     roomUpdatedAt: datetime
     roomDeposit: int
