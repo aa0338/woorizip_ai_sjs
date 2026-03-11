@@ -21,7 +21,7 @@ def RoomInfoEmbeddingAndStore(target:RoomRequest, request:Request):
     
     # embeddingService 인스턴스 생성
     embeddingService = EmbeddingService(client=request.app.state.embeddingClient)
-    chunked = chunking(text)
+    chunked = chunking(text, request.app.state.tokenizer)
     vector = embeddingService.embed(chunked)
     
     # vectorStore 인스턴스 생성

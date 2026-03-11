@@ -1,8 +1,7 @@
-from fastapi import Request
 from kiwipiepy import Kiwi
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-def chunking(self, text, request:Request):
+def chunking(text, tokenizer):
         # 형태소 분해 전처리 - kiwipiepy
         kiwi = Kiwi()
 
@@ -12,14 +11,14 @@ def chunking(self, text, request:Request):
         normalized = "\n".join(sent_result)
 
         # chunking 준비 - langchain-text-splitters
-        tokenizer = request.app.state.tokenizer
+        tokenizer = tokenizer
 
-        splitter = RecursiveCharacterTextSplitter(
+        splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
             tokenizer=tokenizer,
             chunk_size=300,
             chunk_overlap=60
         )
 
-        chunked = splitter(normalized)
+        chunked = splitter.split_text(normalized)
 
         return chunked

@@ -1,5 +1,7 @@
 # app/clients/qdrant_client.py
 
+from uuid import uuid4, uuid5
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct
 from qdrant_client.models import VectorParams, Distance
@@ -19,16 +21,25 @@ class QdrantDbClient:
                 # text-embedding-3-small은 차원수 1536, 벡터유사도 계산방식 COSINE 추천
                 # nlpai-lab/KURE-v1은 차원수 1024
         )
-            
-    def room_upsert(self, name:str, target:RoomRequest, vector):
+
+    def upsert(self, collection_name: str, vector):
+        info = self.client.upsert(
+            collection_name=collection_name,
+            wait=True,
+            points=[PointStruct(id=str(uuid4()), vector=vector, payload={})],
+        )
+        print(info)
+    
+    def room_upsert(self, collection_name:str, target:RoomRequest, vector):
         (n, _) = vector.shape
         
         points=[]
         for i in range(0, n):
-            points.append(PointStruct(id=target.roomNo+"-"+str(i), vector=vector[i], payload={"roomNo": target.roomNo}))
+            point_id = str(uuid5(uuid4, f"{target.roomNo}-{i}"))
+            points.append(PointStruct(id=point_id, vector=vector[i], payload={"roomNo": target.roomNo}))
         
         info = self.client.upsert(
-            collection_name=name,
+            collection_name=collection_name,
             wait=True,
             points=points,
         )
