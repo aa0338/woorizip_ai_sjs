@@ -6,7 +6,7 @@ class SummaryService:
     def __init__(self, client: QwenLlmClient):
         self.client=client
         
-    def summaryReviews(self, room_reviews: str):
+    def summaryReviews(self, room_reviews):
         if not room_reviews:
             raise ValueError("요약할 리뷰 텍스트가 비어있습니다.")
         prompt = f"""Give me a summary about following room's reviews in korean. '{room_reviews}'"""

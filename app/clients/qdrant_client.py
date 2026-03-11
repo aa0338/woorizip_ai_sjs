@@ -3,7 +3,8 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct
 from qdrant_client.models import VectorParams, Distance
-from app.schemas import RoomEmbeddingRequest
+from app.schemas import RoomRequest
+from numpy import shape
 
 # qdrant client 생성
 class QdrantDbClient:
@@ -19,11 +20,16 @@ class QdrantDbClient:
                 # nlpai-lab/KURE-v1은 차원수 1024
         )
             
-    def upsert(self, name:str, target:RoomEmbeddingRequest, vector):
+    def room_upsert(self, name:str, target:RoomRequest, vector):
+        (n, _) = vector.shape
+        
+        points=[]
+        for i in range(0, n):
+            points.append(PointStruct(id=target.roomNo+"-"+str(i), vector=vector[i], payload={"roomNo": target.roomNo}))
+        
         info = self.client.upsert(
-            
             collection_name=name,
             wait=True,
-            points=[PointStruct(id=target.roomNo, vector=vector, payload={"roomNo":target.roomNo, "text":target.text})],
+            points=points,
         )
         print(info)

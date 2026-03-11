@@ -3,6 +3,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from transformers import AutoTokenizer
 
 from app.clients.embedding_client import KureEmbeddingClient, OpenaiEmbeddingClient
 from app.clients.llm_client import QwenLlmClient
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
     # app.state.embeddingClient=OpenaiEmbeddingClient()
     app.state.embeddingClient=KureEmbeddingClient()
     app.state.vectorClient=QdrantDbClient()
+    app.state.tokenizer = AutoTokenizer.from_pretrained("nlpai-lab/KURE-v1")
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -31,9 +33,9 @@ def welcome():
     
 @app.post("/room/summary/totalinfo", tags=["summary"], summary="방 정보 요약", description="방의 정보(기본정보+사진캡션요약+리뷰요약)를 종합 요약합니다.")
 def roomSummary(roomSummaryRequest:RoomSummaryRequest, request:Request):
-    
     summaryService=SummaryService(request.app.state.llmClient)
-    summary = summaryService.summaryRoomInfo(roomSummaryRequest.roomInfo)
+    room_info = roomSummaryRequest.text
+    summary = summaryService.summaryRoomInfo(room_info)
     return {
         "status": True,
         "roomNo": roomSummaryRequest.roomNo,

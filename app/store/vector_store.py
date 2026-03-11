@@ -7,13 +7,13 @@ from qdrant_client.models import PointStruct
 from qdrant_client.models import VectorParams, Distance
 
 from app.clients.qdrant_client import QdrantDbClient
-from app.schemas import RoomEmbeddingRequest
+from app.schemas import RoomRequest
 
 
 class VectorStore:
     def __init__(self, client: QdrantDbClient):
         self.client = client
     
-    def room_vector_store(self, collection_name, target:RoomEmbeddingRequest, vector):
+    def room_vector_store(self, collection_name, target:RoomRequest, vector):
         self.client.ensure_collection(collection_name)
-        self.client.upsert(collection_name, target, vector)
+        self.client.room_upsert(collection_name, target, vector)

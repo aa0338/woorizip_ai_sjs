@@ -21,8 +21,8 @@ class OpenaiEmbeddingClient:
         vector=response.data[0].embedding
         return vector
     
+# nlpai-lab/KURE-v1
 class KureEmbeddingClient:
-    # nlpai-lab/KURE-v1
     def __init__(self):
         self.model = SentenceTransformer("nlpai-lab/KURE-v1")
         
