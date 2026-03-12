@@ -1,10 +1,13 @@
 from kiwipiepy import Kiwi
+import emoji
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 def chunking(text, tokenizer):
+        # 이모지 처리
+        text = emoji.demojize(text, language="ko")
+
         # 형태소 분해 전처리 - kiwipiepy
         kiwi = Kiwi()
-
         result = kiwi.split_into_sents(text)
 
         sent_result = [s.text.strip() for s in result if s.text.strip()]
