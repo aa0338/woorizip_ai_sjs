@@ -16,13 +16,9 @@ router = APIRouter(
 
 @router.post("/room", tags=["embed"], summary="방 정보 임베딩+벡터저장", description="방의 정보(기본정보+사진캡션요약+리뷰요약)를 임베딩하여 qdrant db에 저장합니다.")
 def RoomInfoEmbeddingAndStore(target:RoomRequest, request:Request):
-    data=target.model_dump()
-    text="|".join(f"{k}:{v}" for k, v in data.items() if v is not None)
-    
     # embeddingService 인스턴스 생성
     embeddingService = EmbeddingService(client=request.app.state.embeddingClient)
-    chunked = chunking(text, request.app.state.tokenizer)
-    vector = embeddingService.embed(chunked)
+    vector = embeddingService.room_embed(target, request.app.state.tokenizer)
     
     # vectorStore 인스턴스 생성
     collection_name = "room_collection" # 저장할 컬렉션 이름

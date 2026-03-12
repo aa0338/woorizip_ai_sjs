@@ -6,10 +6,11 @@ class SummaryService:
     def __init__(self, client: QwenLlmClient):
         self.client=client
         
-    def summaryReviews(self, room_reviews):
+    def summaryReviews(self, room_reviews: list):
         if not room_reviews:
             raise ValueError("요약할 리뷰 텍스트가 비어있습니다.")
-        prompt = f"""Give me a summary about following room's reviews in korean. '{room_reviews}'"""
+        review_values = [v for (k, v) in room_reviews if v]
+        prompt = f"""Give me a summary about following room's reviews in korean. '{review_values}'"""
         messages = [
             {"role": "system", "content": f"You are real estate summary master. You have to summarize about room's reviews and return the summary text."},
             {"role": "user", "content": prompt},
@@ -18,10 +19,11 @@ class SummaryService:
         result = self.client.generate_from_messages(messages, max_new_tokens=128)
         return result.strip()
     
-    def summaryImageCaptions(self, room_image_captions):
+    def summaryImageCaptions(self, room_image_captions: list):
         if not room_image_captions:
             raise ValueError("요약할 리뷰 텍스트가 비어있습니다.")
-        prompt = f"""Give me a summary about following room's reviews in korean. '{room_image_captions}'"""
+        caption_values = [v for (k, v) in room_image_captions if v]
+        prompt = f"""Give me a summary about following room's reviews in korean. '{caption_values}'"""
         messages = [
             {"role": "system", "content": f"You are real estate summary master. You have to summarize about room's image captions and return the summary text."},
             {"role": "user", "content": prompt},
