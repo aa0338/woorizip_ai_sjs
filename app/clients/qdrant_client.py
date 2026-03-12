@@ -12,7 +12,11 @@ from numpy import shape
 # qdrant client 생성
 class QdrantDbClient:
     def __init__(self, url:str="http://localhost:6333"):
-        self.client=QdrantClient(url=url)
+        # self.client=QdrantClient(url=url) # 로컬용
+        self.client = QdrantClient(
+            url="https://67244007-2025-4429-8b6c-764e71885a21.sa-east-1-0.aws.cloud.qdrant.io:6333",    # 임시 무료 클라우드 서버
+            api_key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.Jj_WYSz2iWyht8ki9B2Q4uhdJ-WkGQpFLZo3bF54nmM", # 임시
+        )
         
     def ensure_collection(self, name:str):
         if not self.client.collection_exists(name):
