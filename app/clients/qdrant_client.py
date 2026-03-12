@@ -6,7 +6,7 @@ import uuid
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct
 from qdrant_client.models import VectorParams, Distance
-from app.schemas import RoomRequest
+from app.schemas import RoomTotalRequest
 from numpy import shape
 
 # qdrant client 생성
@@ -31,13 +31,13 @@ class QdrantDbClient:
         )
         print(info)
     
-    def room_upsert(self, collection_name:str, target:RoomRequest, vector):
+    def room_upsert(self, collection_name:str, target:RoomTotalRequest, vector):
         (n, _) = vector.shape
         
         points=[]
         for i in range(0, n):
             point_id = str(uuid5(UUID(target.roomNo), f"{i}"))
-            points.append(PointStruct(id=point_id, vector=vector[i], payload={"roomNo": target.roomNo, "roomName": target.roomName, "houseNo": target.houseNo, "houseName": target.houseName, "houseAddress": target.houseAddress}))
+            points.append(PointStruct(id=point_id, vector=vector[i], payload=target.model_dump(mode="json")))
         
         info = self.client.upsert(
             collection_name=collection_name,
@@ -45,3 +45,15 @@ class QdrantDbClient:
             points=points,
         )
         print(info)
+        
+    def room_query(self, collection_name:str, point):
+        hits = self.client.query_points(
+            collection_name=collection_name,
+            query=point,
+            limit=30
+        ).points
+        
+        for hit in hits:
+            print(hit.payload, "score:", hit.score)
+            
+        return hits

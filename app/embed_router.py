@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 
 from app.clients.embedding_client import OpenaiEmbeddingClient
 from app.clients.qdrant_client import QdrantDbClient
-from app.schemas import RoomRequest
+from app.schemas import RoomTotalRequest
 from app.services.chunking import chunking
 from app.services.embedding_service import EmbeddingService
 from app.store.vector_store import VectorStore
@@ -14,8 +14,8 @@ router = APIRouter(
 )
 
 
-@router.post("/room", tags=["embed"], summary="방 정보 임베딩+벡터저장", description="방의 정보(기본정보+사진캡션요약+리뷰요약)를 임베딩하여 qdrant db에 저장합니다.")
-def RoomInfoEmbeddingAndStore(target:RoomRequest, request:Request):
+@router.post("/room", summary="방 정보 임베딩+벡터저장", description="방의 정보(기본정보+사진캡션요약+리뷰요약)를 임베딩하여 qdrant db에 저장합니다.")
+def RoomInfoEmbeddingAndStore(target:RoomTotalRequest, request:Request):
     # embeddingService 인스턴스 생성
     embeddingService = EmbeddingService(client=request.app.state.embeddingClient)
     vector = embeddingService.room_embed(target, request.app.state.tokenizer)

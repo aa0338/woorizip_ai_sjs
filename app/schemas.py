@@ -5,7 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 # 방 정보 종합 요약시 사용 (리뷰, 이미지설명 포함)
-class RoomRequest(BaseModel):
+class RoomTotalRequest(BaseModel):
     roomNo: str
     roomName: str
     houseNo: str
@@ -29,7 +29,7 @@ class RoomRequest(BaseModel):
     reviewSummary: str
     
     
-    # 리뷰나 이미지 캡션들 요약시 사용
+# 리뷰나 이미지 캡션들 요약시 사용
 class RoomSummaryRequest(BaseModel):
     roomNo: str
-    text: list
+    texts: list
