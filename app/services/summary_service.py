@@ -1,9 +1,9 @@
 # app/services/summary_service.py
 
-from app.clients.llm_client import QwenLlmClient
+from app.clients.qwen_llm_client import QwenLlmClient
 from app.schemas import RoomSummaryRequest
 
-class SummaryService:
+class RoomSummaryService:
     def __init__(self, client: QwenLlmClient):
         self.client=client
         
